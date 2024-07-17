@@ -1,46 +1,86 @@
 <?php
-class Wplp_notification_email {
-    public function __construct() {
-        add_action('transition_post_status', array($this, 'send_email_on_status_change'), 10, 3);
+class Wplp_notification_email
+{
+    public function __construct()
+    {
+        add_action('save_post', array($this, 'send_email_to_affiliate_on_status_change'), 10, 3);
     }
 
-    public function send_email_on_status_change($post_id, $old_status, $post) {
-        // Check if the post type is 'ticket'
-        if ($post->post_type !== 'ticket') {
+    public function send_email_to_affiliate_on_status_change($post_id, $post, $update)
+    {
+        // Check if the post is a ticket and not an autosave or revision
+        if ($post->post_type !== 'ticket' || wp_is_post_autosave($post_id) || wp_is_post_revision($post_id)) {
             return;
         }
 
-        // Check if the status has changed to either "Converted" or "Completed"
-       $new_status = get_post_meta($post_id, 'task_status', true);
+        // Get the new status of the post
+        $new_status = get_post_meta($post_id, 'task_status', true);
 
-        if (($new_status === 'Converted' || $new_status === 'Completed') && $old_status !== $new_status) {
+        // Check if the new status is "Converted" or "Completed"
+        if ($new_status === 'Completed') {
             // Get the affiliate ID
-            $affiliate_id = get_post_meta($post->ID, 'affiliate_id', true);
+            $affiliate_id = get_post_meta($post_id, 'affiliate_id', true);
 
             // Get affiliate email
             $affiliate_email = get_the_author_meta('user_email', $affiliate_id);
 
             // Prepare and send the email
-            if ($affiliate_email) {
-                $subject = 'Status Update: ' . ucfirst($new_status);
-                $message = 'Hello,
+            if ($affiliate_id) {
+                // Get the user info associated with the affiliate ID
+                $user_info = get_userdata($affiliate_id);
+                $affiliate_name = $user_info->display_name;
+                $affiliate_email = $user_info->user_email;
 
-The status of your ticket has been changed to ' . ucfirst($new_status) . '.
+                // Example: Get client name, total task amount, and affiliate cut (replace with your actual meta keys)
+                $client_name = get_post_meta($post->ID, 'client_name', true);
+                $task_amount_total = get_post_meta($post->ID, 'task_amt_total', true);
+                $affiliate_cut = get_post_meta($post->ID, 'affiliate_cut', true);
 
-Here are the details:
-- Ticket ID: ' . $post->ID . '
-- Status: ' . ucfirst($new_status) . '
+                // Prepare your email content
+                $subject = 'Task Completion Notification';
+                $message = "Dear $affiliate_name,\n\n";
+                $message .= "Great news!\n";
+                $message .= "We just completed a task for $client_name.\n";
+                $message .= "The total for the task was $task_amount_total.\n";
+                $message .= "Since they were your referral, you get a share of this. 🙂\n";
+                $message .= "Your earnings from the deal: $affiliate_cut.\n\n";
+                $message .= "Thank you.";
 
-Best regards,
-Your Company';
+                // Send the email
+                wp_mail($affiliate_email, $subject, $message);
+            }
+            
+        } else if ($new_status === 'Converted') {
+            // Get the affiliate ID
+            $affiliate_id = get_post_meta($post_id, 'affiliate_id', true);
 
+            // Get affiliate email
+            $affiliate_email = get_the_author_meta('user_email', $affiliate_id);
+
+            // Prepare and send the email
+            if ($affiliate_id) {
+                // Get the user info associated with the affiliate ID
+                $user_info = get_userdata($affiliate_id);
+                $affiliate_name = $user_info->display_name;
+                $affiliate_email = $user_info->user_email;
+
+                // Example: Get client name and task amount converted (replace with your actual meta keys)
+                $client_name = get_post_meta($post->ID, 'client_name', true);
+                $task_amount = get_post_meta($post->ID, 'task_amt_converted', true);
+
+                // Prepare your email content
+                $subject = 'Referral Conversion Notification';
+                $message = "Dear $affiliate_name,\n\n";
+                $message .= "Good news!\n";
+                $message .= "We just converted one of your referrals, $client_name, for one of their tasks. ";
+                $message .= "The deal was closed for $task_amount.\n";
+                $message .= "We will keep you posted on how it goes.\n\n";
+                $message .= "Thank you.";
+
+                // Send the email
                 wp_mail($affiliate_email, $subject, $message);
             }
         }
     }
 }
-
-// Instantiate the class after WordPress has loaded
-add_action('plugins_loaded', function () {
-    new Wplp_notification_email();
-});
+new Wplp_notification_email();
