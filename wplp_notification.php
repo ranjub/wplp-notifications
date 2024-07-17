@@ -59,7 +59,7 @@ function deactivate_wplp_notification()
 
 register_activation_hook(__FILE__, 'activate_wplp_notification');
 register_deactivation_hook(__FILE__, 'deactivate_wplp_notification');
-register_activation_hook(__FILE__, 'create_custom_table');
+// register_activation_hook(__FILE__, 'create_custom_table');
 
 // Include the Activator class file
 require_once plugin_dir_path(__FILE__) . 'includes/class-wplp_notification-activator.php';

@@ -2,3 +2,26 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+/* Add some gap between the custom meta boxes */
+#tickets_meta_box_status {
+  margin-bottom: 20px;
+}
+
+#tickets_meta_box_details {
+  margin-bottom: 20px;
+}
+
+#tickets_meta_box_status label,
+#tickets_meta_box_details label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+#tickets_meta_box_status select,
+#tickets_meta_box_details input[type="text"],
+#tickets_meta_box_details input[type="number"] {
+  width: 100%;
+  padding: 5px;
+}
