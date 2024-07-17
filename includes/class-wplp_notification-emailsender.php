@@ -1,25 +1,21 @@
 <?php
-class Wplp_notification_email
-{
-    public function __construct()
-    {
-        add_action('save_post', array($this, 'send_email_to_affiliate_on_status_change'), 10, 3);
+class Wplp_notification_email {
+    public function __construct() {
+        add_action('transition_post_status', array($this, 'send_email_on_status_change'), 10, 3);
     }
 
-    public function send_email_to_affiliate_on_status_change($post_id, $post, $update)
-    {
-        // Check if the post is a ticket and not an autosave or revision
-        if ($post->post_type !== 'ticket' || wp_is_post_autosave($post_id) || wp_is_post_revision($post_id)) {
+    public function send_email_on_status_change($post_id, $old_status, $post) {
+        // Check if the post type is 'ticket'
+        if ($post->post_type !== 'ticket') {
             return;
         }
 
-        // Get the new status of the post
-        $new_status = get_post_meta($post_id, 'task_status', true);
+        // Check if the status has changed to either "Converted" or "Completed"
+       $new_status = get_post_meta($post_id, 'task_status', true);
 
-        // Check if the new status is "Converted" or "Completed"
-        if ($new_status === 'Converted' || $new_status === 'Completed') {
+        if (($new_status === 'Converted' || $new_status === 'Completed') && $old_status !== $new_status) {
             // Get the affiliate ID
-            $affiliate_id = get_post_meta($post_id, 'affiliate_id', true);
+            $affiliate_id = get_post_meta($post->ID, 'affiliate_id', true);
 
             // Get affiliate email
             $affiliate_email = get_the_author_meta('user_email', $affiliate_id);
@@ -32,7 +28,7 @@ class Wplp_notification_email
 The status of your ticket has been changed to ' . ucfirst($new_status) . '.
 
 Here are the details:
-- Ticket ID: ' . $post_id . '
+- Ticket ID: ' . $post->ID . '
 - Status: ' . ucfirst($new_status) . '
 
 Best regards,
@@ -44,4 +40,7 @@ Your Company';
     }
 }
 
-new Wplp_notification_email();
+// Instantiate the class after WordPress has loaded
+add_action('plugins_loaded', function () {
+    new Wplp_notification_email();
+});
