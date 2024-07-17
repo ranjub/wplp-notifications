@@ -75,13 +75,13 @@ class Wplp_notification_CPT
         $affiliate_cut = get_post_meta($post->ID, 'affiliate_cut', true);
     ?>
         <label for="task_amt_converted">Task Amount Converted:</label>
-        <input type="text" name="task_amt_converted" id="task_amt_converted" value="<?php echo esc_attr($task_amt_converted); ?>">
+        <input type="number" name="task_amt_converted" id="task_amt_converted" min="0" value="<?php echo esc_attr($task_amt_converted); ?>">
         <br>
         <label for="task_amt_total">Task Amount Total:</label>
-        <input type="text" name="task_amt_total" id="task_amt_total" value="<?php echo esc_attr($task_amt_total); ?>">
+        <input type="number" name="task_amt_total" id="task_amt_total" min="0" value="<?php echo esc_attr($task_amt_total); ?>">
         <br>
         <label for="affiliate_cut">Affiliate Cut:</label>
-        <input type="number" name="affiliate_cut" id="affiliate_cut" value="<?php echo esc_attr($affiliate_cut); ?>">
+        <input type="number" name="affiliate_cut" id="affiliate_cut" min="0" value="<?php echo esc_attr($affiliate_cut); ?>">
 <?php
     }
 
@@ -105,6 +105,7 @@ class Wplp_notification_CPT
         }
         // Save the meta fields
         $previous_status = get_post_meta($post_id, 'task_status', true);
+        $task_amt_converted = isset($_POST['task_amt_converted']) ? sanitize_text_field($_POST['task_amt_converted']) : get_post_meta($post_id, 'task_amt_converted', true);
 
         if (isset($_POST['task_status'])) {
             update_post_meta($post_id, 'task_status', sanitize_text_field($_POST['task_status']));
@@ -125,11 +126,20 @@ class Wplp_notification_CPT
             update_post_meta($post_id, 'affiliate_cut', intval($_POST['affiliate_cut']));
         }
 
+
         // Add a notification when task_status is changed
         if (isset($_POST['task_status']) && $_POST['task_status'] !== $previous_status) {
             $this->add_notification($post_id, 'task_status', sanitize_text_field($_POST['task_status']));
+            // Update affiliate_cut for special statuses
+
+            if (in_array($_POST['task_status'], array('Converted', 'Completed'))) {
+                $affiliate_cut = $task_amt_converted * 0.25;
+
+                update_post_meta($post_id, 'affiliate_cut', $affiliate_cut);
+            }
         }
     }
+
 
     public function tickets_admin_scripts($hook)
     {
