@@ -67,6 +67,11 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-wplp_notification-activ
 // Include the custom post type class file
 require_once plugin_dir_path(__FILE__) . 'includes/class-wplp_notification-cpt.php';
 
+//Include this file to send email after the change of the status
+require_once plugin_dir_path(__FILE__) . 'includes/class-wplp_notification-emailsender.php';
+
+
+
 // Hook the post type registration to 'init' action
 add_action('init', array('Wplp_notification_Activator', 'register_tickets_post_type'));
 
