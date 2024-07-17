@@ -37,33 +37,33 @@ class Wplp_notification_CPT
         $client_id = get_post_meta($post->ID, 'client_id', true);
         $users = get_users();
 ?>
-<label for="task_status">Task Status:</label>
-<select name="task_status" id="task_status">
-    <option value="Early" <?php selected($task_status, 'Early'); ?>>Early</option>
-    <option value="Contacted" <?php selected($task_status, 'Contacted'); ?>>Contacted</option>
-    <option value="Awaiting Response" <?php selected($task_status, 'Awaiting Response'); ?>>Awaiting Response</option>
-    <option value="Converted" <?php selected($task_status, 'Converted'); ?>>Converted</option>
-    <option value="Completed" <?php selected($task_status, 'Completed'); ?>>Completed</option>
-</select>
-<br>
-<label for="affiliate_id">Affiliate ID:</label>
-<select name="affiliate_id" id="affiliate_id">
-    <option value=""><?php _e('Select Affiliate', 'wplp_notification'); ?></option>
-    <?php foreach ($users as $user) { ?>
-    <option value="<?php echo $user->ID; ?>" <?php selected($affiliate_id, $user->ID); ?>>
-        <?php echo $user->display_name; ?></option>
-    <?php } ?>
-</select>
-<br>
-<label for="client_id">Client ID:</label>
-<select name="client_id" id="client_id">
-    <option value=""><?php _e('Select Client', 'wplp_notification'); ?></option>
-    <?php foreach ($users as $user) { ?>
-    <option value="<?php echo $user->ID; ?>" <?php selected($client_id, $user->ID); ?>>
-        <?php echo $user->display_name; ?></option>
-    <?php } ?>
-</select>
-<?php
+        <label for="task_status">Task Status:</label>
+        <select name="task_status" id="task_status">
+            <option value="Early" <?php selected($task_status, 'Early'); ?>>Early</option>
+            <option value="Contacted" <?php selected($task_status, 'Contacted'); ?>>Contacted</option>
+            <option value="Awaiting Response" <?php selected($task_status, 'Awaiting Response'); ?>>Awaiting Response</option>
+            <option value="Converted" <?php selected($task_status, 'Converted'); ?>>Converted</option>
+            <option value="Completed" <?php selected($task_status, 'Completed'); ?>>Completed</option>
+        </select>
+        <br>
+        <label for="affiliate_id">Affiliate ID:</label>
+        <select name="affiliate_id" id="affiliate_id">
+            <option value=""><?php _e('Select Affiliate', 'wplp_notification'); ?></option>
+            <?php foreach ($users as $user) { ?>
+                <option value="<?php echo $user->ID; ?>" <?php selected($affiliate_id, $user->ID); ?>>
+                    <?php echo $user->display_name; ?></option>
+            <?php } ?>
+        </select>
+        <br>
+        <label for="client_id">Client ID:</label>
+        <select name="client_id" id="client_id">
+            <option value=""><?php _e('Select Client', 'wplp_notification'); ?></option>
+            <?php foreach ($users as $user) { ?>
+                <option value="<?php echo $user->ID; ?>" <?php selected($client_id, $user->ID); ?>>
+                    <?php echo $user->display_name; ?></option>
+            <?php } ?>
+        </select>
+    <?php
     }
 
     public function display_details_meta_box($post)
@@ -74,15 +74,14 @@ class Wplp_notification_CPT
         $task_amt_total = get_post_meta($post->ID, 'task_amt_total', true);
         $affiliate_cut = get_post_meta($post->ID, 'affiliate_cut', true);
     ?>
-<label for="task_amt_converted">Task Amount Converted:</label>
-<input type="text" name="task_amt_converted" id="task_amt_converted"
-    value="<?php echo esc_attr($task_amt_converted); ?>">
-<br>
-<label for="task_amt_total">Task Amount Total:</label>
-<input type="text" name="task_amt_total" id="task_amt_total" value="<?php echo esc_attr($task_amt_total); ?>">
-<br>
-<label for="affiliate_cut">Affiliate Cut:</label>
-<input type="number" name="affiliate_cut" id="affiliate_cut" value="<?php echo esc_attr($affiliate_cut); ?>">
+        <label for="task_amt_converted">Task Amount Converted:</label>
+        <input type="text" name="task_amt_converted" id="task_amt_converted" value="<?php echo esc_attr($task_amt_converted); ?>">
+        <br>
+        <label for="task_amt_total">Task Amount Total:</label>
+        <input type="text" name="task_amt_total" id="task_amt_total" value="<?php echo esc_attr($task_amt_total); ?>">
+        <br>
+        <label for="affiliate_cut">Affiliate Cut:</label>
+        <input type="number" name="affiliate_cut" id="affiliate_cut" value="<?php echo esc_attr($affiliate_cut); ?>">
 <?php
     }
 
@@ -104,8 +103,9 @@ class Wplp_notification_CPT
                 return $post_id;
             }
         }
-
         // Save the meta fields
+        $previous_status = get_post_meta($post_id, 'task_status', true);
+
         if (isset($_POST['task_status'])) {
             update_post_meta($post_id, 'task_status', sanitize_text_field($_POST['task_status']));
         }
@@ -126,7 +126,7 @@ class Wplp_notification_CPT
         }
 
         // Add a notification when task_status is changed
-        if (isset($_POST['task_status'])) {
+        if (isset($_POST['task_status']) && $_POST['task_status'] !== $previous_status) {
             $this->add_notification($post_id, 'task_status', sanitize_text_field($_POST['task_status']));
         }
     }
@@ -156,8 +156,10 @@ class Wplp_notification_CPT
         global $wpdb;
 
         $user_id = get_current_user_id();
-        $post = get_post($post_id);
+        // $post = get_post($post_id);
         $permalink = get_permalink($post_id);
+
+
 
         $wpdb->insert(
             $wpdb->prefix . 'wplp_notifications',
