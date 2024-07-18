@@ -32,7 +32,16 @@ class Wplp_notification_email
                 $affiliate_email = $user_info->user_email;
 
                 // Example: Get client name, total task amount, and affiliate cut (replace with your actual meta keys)
-                $client_name = get_post_meta($post->ID, 'client_name', true);
+                // $client_name = get_post_meta($post->ID, 'client_id', true);
+
+                // Get the client ID and client name
+                $client_id = get_post_meta($post_id, 'client_id', true);
+                if ($client_id) {
+                    $client_info = get_userdata($client_id);
+                    $client_name = $client_info->display_name;
+                } else {
+                    $client_name = 'Unknown Client';
+                }
                 $task_amount_total = get_post_meta($post->ID, 'task_amt_total', true);
                 $affiliate_cut = get_post_meta($post->ID, 'affiliate_cut', true);
 
