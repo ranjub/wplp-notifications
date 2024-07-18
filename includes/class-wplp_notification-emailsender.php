@@ -49,7 +49,6 @@ class Wplp_notification_email
                 // Send the email
                 wp_mail($affiliate_email, $subject, $message);
             }
-            
         } else if ($new_status === 'Converted') {
             // Get the affiliate ID
             $affiliate_id = get_post_meta($post_id, 'affiliate_id', true);

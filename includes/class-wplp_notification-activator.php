@@ -99,6 +99,6 @@ class Wplp_notification_Activator
         ) $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta($sql);
+		dbDelta($sql); //modifies the db 
 	}
 }
