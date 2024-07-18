@@ -13,9 +13,9 @@ class Wplp_notification_CPT
         add_action('manage_users_custom_column', array($this, 'show_affiliate_percentage_column'), 10, 3);
 
         // Add custom user meta field
-        add_action('show_user_profile', array($this, 'show_affiliate_percentage_field'));
+        // add_action('show_user_profile', array($this, 'show_affiliate_percentage_field'));
         add_action('edit_user_profile', array($this, 'show_affiliate_percentage_field'));
-        add_action('personal_options_update', array($this, 'save_affiliate_percentage_field'));
+        // add_action('personal_options_update', array($this, 'save_affiliate_percentage_field'));
         add_action('edit_user_profile_update', array($this, 'save_affiliate_percentage_field'));
 
         // Save affiliate cut based on user affiliate percentage when user is updated
