@@ -46,7 +46,7 @@ class Wplp_notification_email
                 $affiliate_cut = get_post_meta($post->ID, 'affiliate_cut', true);
 
                 // Prepare your email content
-                $subject = 'Task Completion Notification';
+                $subject = 'Status Changed';
                 $message = "Dear $affiliate_name,\n\n";
                 $message .= "Great news!\n";
                 $message .= "We just completed a task for $client_name.\n";
@@ -77,10 +77,10 @@ class Wplp_notification_email
                 $task_amount = get_post_meta($post->ID, 'task_amt_converted', true);
 
                 // Prepare your email content
-                $subject = 'Referral Conversion Notification';
+                $subject = 'Status Changed';
                 $message = "Dear $affiliate_name,\n\n";
                 $message .= "Good news!\n";
-                $message .= "We just converted one of your referrals, $client_name, for one of their tasks. ";
+                $message .= "We just converted one of your referrals $client_name, for one of their tasks. ";
                 $message .= "The deal was closed for $task_amount.\n";
                 $message .= "We will keep you posted on how it goes.\n\n";
                 $message .= "Thank you.";
