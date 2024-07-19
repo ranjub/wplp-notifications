@@ -79,7 +79,7 @@ add_action('init', array('Wplp_notification_Activator', 'register_tickets_post_t
 add_action('plugins_loaded', 'initialize_wplp_notification_cpt');
 function initialize_wplp_notification_cpt()
 {
-	// new Wplp_notification_CPT();
+	new Wplp_notification_CPT();
 }
 
 // Load the main plugin class
