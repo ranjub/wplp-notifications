@@ -70,6 +70,10 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-wplp_notification-cpt.p
 //Include this file to send email after the change of the status
 require_once plugin_dir_path(__FILE__) . 'includes/class-wplp_notification-emailsender.php';
 
+//Include this file to send message in the slack-channel
+require_once plugin_dir_path(__FILE__) . 'includes/class-wplp_notification-slackmessage.php';
+
+
 
 
 // Hook the post type registration to 'init' action
